@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Quiz - 3042331</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>The Ultimate Quiz on Outer Space! </h1>
+<div class="quiz-container">
+  <div id="quiz"></div>
+</div>
+<button id="start">Start Quiz</button>
+<button id="previous">Previous Question</button>
+<button id="next">Next Question</button>
+<button id="submit">Submit Quiz</button>
+<div id="results"></div>
+
+<script>
+
+
+  // Functions
+  function buildQuiz(){
+    // variable to store the HTML output
+    const output = [];
+
+    // for each question...
+    myQuestions.forEach(
+      (currentQuestion, questionNumber) => {
+
+        // variable to store the list of answers
+        const answers = [];
+    
+      
+        // for each available answer
+        for(letter in currentQuestion.answers){
+
+          // add an HTML radio button
+          answers.push(
+            `<label>
+              <input type="radio" name="question${questionNumber}" value="${letter}">
+              ${letter} :
+              ${currentQuestion.answers[letter]}
+            </label>`
+          );
+
+
+
+        }
+
+        // add this question and its answers to the output
+        output.push(
+          `<div class="slide">
+            <div class="question"> ${currentQuestion.question} </div>
+            <div class="answers"> ${answers.join("")} </div>
+          </div>`
+        );
+      }
+    );
+
+    // combine our output list into one string of HTML and put it on the page
+    quizContainer.innerHTML = output.join('');
+  }
+
+  function showResults(){
+
+    // gather answer containers from our quiz
+    const answerContainers = quizContainer.querySelectorAll('.answers');
+
+    // keep track of user's answers
+    let numCorrect = -1;
+
+    // for each question...
+    myQuestions.forEach( (currentQuestion, questionNumber) => {
+
+      // find selected answer
+      const answerContainer = answerContainers[questionNumber];
+      const selector = `input[name=question${questionNumber}]:checked`;
+      const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+
+      // if answer is correct
+      if(userAnswer === currentQuestion.correctAnswer){
+        // add to the number of correct answers
+        numCorrect++;
+
+        // color the answers green
+        answerContainers[questionNumber].style.color = 'lightgreen';
+      }
+      // if answer is wrong or blank
+      else{
+        // color the answers red
+        answerContainers[questionNumber].style.color = 'red';
+      }
+    });
+
+    // show number of correct answers out of total
+    resultsContainer.innerHTML = `Your Score is ${numCorrect} out of ${myQuestions.length - 1}`;
+  }
+
+  function showSlide(n) {
+    slides[currentSlide].classList.remove('active-slide');
+    slides[n].classList.add('active-slide');
+    currentSlide = n;
+
+    if(currentSlide === 1){
+      previousButton.style.display = 'none';
+    }
+    else{
+      previousButton.style.display = 'inline-block';
+    }
+    if(currentSlide === slides.length-1){
+      nextButton.style.display = 'none';
+      submitButton.style.display = 'inline-block';
+    }
+    else if(currentSlide === 0){
+      startButton.style.display = 'inline-block';
+      previousButton.style.display = 'none';
+      nextButton.style.display = 'none'; 
+      submitButton.style.display = 'none';  
+    }
+    else{
+      nextButton.style.display = 'inline-block';
+      submitButton.style.display = 'none';
+    }
+  }
+  function startQuiz(){
+    showSlide(currentSlide + 1);
+   this.style.display = 'none';
+    
+  }
+  function showNextSlide() {
+    showSlide(currentSlide + 1);
+  }
+
+  function showPreviousSlide() {
+    showSlide(currentSlide - 1);
+  }
+
+  // Variables
+  const quizContainer = document.getElementById('quiz');
+  const resultsContainer = document.getElementById('results');
+  const submitButton = document.getElementById('submit');
+  const myQuestions = [
+      {
+        //Main page
+        question: "Welcome to my Quiz!" + "<br>" + "<br>" + "Click Start to begin the quiz."
+        
+      },
+      {
+          question: "Q1. What is the outermost region of the Sun’s atmosphere called?",
+          answers: {
+              a: "Core",
+              b: "Shell",
+              c: "Corona",
+              d: "Penumbra"
+          },
+          correctAnswer: "c"
+    }, 
+      
+    { 
+      question: "Q2. What are Nebulas?",
+      answers: {
+        a: "Huge Masses of Gas",
+        b: "Star Nursary",
+        c: "Group of Planets",
+        d: "Gas and Dust Clouds",
+      },
+      correctAnswer: "d"
+    },
+    {
+      question: "Q3. Smallest Planet in the Solar System?",
+      answers: {
+        a: "Mercury",
+        b: "Venus",
+        c: "Mars",
+        d: "Pluto"
+      },
+      correctAnswer: "a"
+    },
+    {
+      question: "Q4. The Atmosphere of Mars is mostly composed of?",
+      answers: {
+        a: "Oxygen",
+        b: "Carbon Dioxide",
+        c: "Nitrogen",
+        d: "Helium"
+      },
+      correctAnswer: "b"
+    },
+    {
+      question: "Q5. The Hottest Planet in our Solar System?",
+      answers: {
+        a: "Mercury",
+        b: "Venus",
+        c: "Jupiter",
+        d: "Earth"
+      },
+      correctAnswer: "b"
+    },
+    {
+      question: "Q6. How many moons does Saturn have?",
+      answers: {
+        a: "24",
+        b: "14",
+        c: "64",
+        d: "82"
+      },
+      correctAnswer: "d"
+    }
+
+  ];
+
+ //Quiz builder 
+  buildQuiz();
+
+  
+  const startButton = document.getElementById("start");
+  const previousButton = document.getElementById("previous");
+  const nextButton = document.getElementById("next");
+  const slides = document.querySelectorAll(".slide");
+  let currentSlide = 0;
+
+  // Show the first slide
+  showSlide(currentSlide);
+
+  // Event listeners
+  startButton.addEventListener("click", startQuiz);
+  submitButton.addEventListener('click', showResults);
+  previousButton.addEventListener("click", showPreviousSlide);
+  nextButton.addEventListener("click", showNextSlide);
+
+
+</script>
+<footer>
+  <div>
+  <nav>
+    <ul>
+      <li>Quiz by: Muhammad Umar Tariq</li>
+      <li>GC. Ref: 3042331</li>
+      <li>muhammadumar123@live.com</li>
+    </ul>
+  </nav>
+  </div>
+</footer>
+</body>
+</html>
